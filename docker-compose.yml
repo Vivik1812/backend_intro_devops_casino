@@ -1,0 +1,65 @@
+services:
+
+  db:
+    image: postgres:16-alpine
+    container_name: casino-db 
+    environment:
+      - POSTGRES_DB=casino-db
+      - POSTGRES_USER=casino 
+      - POSTGRES_PASSWORD=casino 
+    volumes:
+      - datos-postgres:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+    networks:
+      - red-casino 
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U casino -d casino-db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  backend:
+    build: .
+    image: casino-backend:1.0
+    container_name: casino-backend
+    ports: 
+    - "3000:3000"
+    environment:
+      - PORT=3000
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=casino
+      - DB_PASSWORD=casino
+      - DB_NAME=casino-db
+      - CORS_ORIGIN="*"
+      - MENSAJE_BIENVENIDA=Backend del Casino en Dockers
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+    - datos-casino:/data
+    networks:
+    - red-casino 
+    restart: unless-stopped
+  
+  frontend:
+    build: ../frontend_intro_devops_casino
+    image: casino-frontend:1.0
+    container_name: casino-frontend
+    ports:
+    - "8080:8080"
+    volumes:
+    - ../frontend_intro_devops_casino:/app
+    - /app/node_modules
+    depends_on:
+    - backend
+    networks:
+    - red-casino 
+    restart: unless-stopped
+
+networks:
+  red-casino: 
+    driver: bridge
+  
+volumes:
+  datos-casino:
+  datos-postgres:
