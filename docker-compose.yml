@@ -102,6 +102,26 @@ services:
       - red-casino 
     restart: unless-stopped
 
+  #ESTADISTICAS
+  estadisticas:
+    build: .
+    container_name: casino-estadisticas 
+    environment:
+      - PORT=8006
+      - JWT_SECRET=ESTERNOCLEIDOMASTOIDEO_ACIDODESOXIRIBONUCLEICO_ACIDORIBONUCLEICO
+      - DB_HOST=db 
+      - DB_PORT=5432
+      - DB_USER=casino 
+      - DB_PASSWORD=casino 
+      - DB_NAME=casino-db 
+      - CORS_ORIGIN=http://localhost:4200
+    ports:
+      - "8006:8006"
+    networks: 
+      - red-casino 
+    restart: unless-stopped
+
+
 networks:
   red-casino: 
     driver: bridge
@@ -109,5 +129,3 @@ networks:
 volumes:
   datos-casino:
   datos-postgres:
-
-
