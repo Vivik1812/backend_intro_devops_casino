@@ -82,6 +82,25 @@ services:
       - red-casino
     restart:
       unless-stopped
+  
+  #APUESTAS
+  apuestas:
+    build: ../apuestas-service 
+    container_name: casino-apuestas 
+    environment:
+      - PORT=8005
+      - JWT_SECRET=ESTERNOCLEIDOMASTOIDEO_ACIDODESOXIRIBONUCLEICO_ACIDORIBONUCLEICO
+      - DB_HOST=db 
+      - DB_PORT=5432
+      - DB_USER=casino 
+      - DB_PASSWORD=casino 
+      - DB_NAME=casino-db 
+      - CORS_ORIGIN=http://localhost:4200
+    ports:
+      - "8005:8005"
+    networks:
+      - red-casino 
+    restart: unless-stopped
 
 networks:
   red-casino: 
