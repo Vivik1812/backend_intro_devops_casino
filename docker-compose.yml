@@ -1,5 +1,6 @@
 services:
 
+  #BASE DE DATOS
   db:
     image: postgres:16-alpine
     container_name: casino-db 
@@ -17,6 +18,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  #BACKEND
   backend:
     build: .
     image: casino-backend:1.0
@@ -40,7 +43,8 @@ services:
     networks:
     - red-casino 
     restart: unless-stopped
-  
+
+  #FRONTEND
   frontend:
     build: ../frontend_intro_devops_casino
     image: casino-frontend:1.0
@@ -55,6 +59,29 @@ services:
     networks:
     - red-casino 
     restart: unless-stopped
+  
+  #BONOS
+  bonos:
+    build: ../bonos-service 
+    container_name: casino-bonos 
+    ports:
+    - "8004:8004"
+    environment:
+    - PORT=8004
+    - JWT_SECRET=ESTERNOCLEIDOMASTOIDEO_ACIDODESOXIRIBONUCLEICO_ACIDORIBONUCLEICO
+    - DB_HOST=db 
+    - DB_PORT=5432
+    - DB_USER=casino 
+    - DB_PASSWORD=casino
+    - DB_NAME=casino-db
+    - CORS_ORIGIN=http://localhost:4200
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - red-casino
+    restart:
+      unless-stopped
 
 networks:
   red-casino: 
@@ -63,3 +90,5 @@ networks:
 volumes:
   datos-casino:
   datos-postgres:
+
+
