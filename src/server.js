@@ -26,11 +26,11 @@ app.use(express.json({ limit: '1mb' }));
 //                 REINICIA el pod.
 //   • readiness → ¿listo para recibir tráfico? Verifica la BD. Si falla, k8s
 //                 SACA el pod del balanceo (sin reiniciarlo) hasta que sane.
-app.get('/livez', (req, res) => {
+app.get('/live', (req, res) => {
   res.json({ status: 'alive', uptime: process.uptime() });
 });
 
-app.get('/readyz', async (req, res) => {
+app.get('/ready', async (req, res) => {
   try {
     await pool.query('SELECT 1');
     res.json({ status: 'ready', db: 'up' });
