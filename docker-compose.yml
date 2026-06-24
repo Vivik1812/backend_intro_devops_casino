@@ -104,7 +104,7 @@ services:
 
   #ESTADISTICAS
   estadisticas:
-    build: .
+    build: ../estadisticas-service
     container_name: casino-estadisticas 
     environment:
       - PORT=8006
