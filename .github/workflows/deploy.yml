@@ -46,6 +46,16 @@ jobs:
       - name: 6. Conectar kubectl al cluster
         run: aws eks update-kubeconfig --name "$CLUSTER_NAME" --region "$AWS_REGION"
 
+      - name: 6.1 Crear/actualizar ConfigMap con el esquema SQL
+        run: |
+          kubectl create configmap postgres-init-sql \
+            --from-file=01-init.sql=db/init.sql \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: 6.2 Desplegar PostgreSQL si no existe
+        run: |
+          kubectl apply -f k8s/postgres.yaml
+          kubectl rollout status deployment/postgres --timeout=120s
       - name: 7. Desplegar el Deployment y el Service
         env:
           IMAGE_TAG: ${{ github.sha }}
