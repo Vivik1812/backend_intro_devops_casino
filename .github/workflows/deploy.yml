@@ -7,7 +7,7 @@ env:
   AWS_REGION: ${{ vars.AWS_REGION }}
   CLUSTER_NAME: ${{ vars.EKS_CLUSTER }}
   SERVICE_NAME: ${{ vars.ECR_REPOSITORY }}
-  IMAGE_VERSION: "v1.1.0"
+  IMAGE_VERSION: "v1.1.1"
 jobs:
 
   #Primera etapa: TESTS
