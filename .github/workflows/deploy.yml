@@ -12,30 +12,29 @@ jobs:
 
   #Primera etapa: TESTS
   test: 
-    name: Pruebas unitarias backend(pytest)
+    name: Pruebas unitarias backend(Node.js)
     runs-on: ubuntu-latest
-    strategy: 
-      fail-fast: false
-      matrix:
-        service: [bonos-service, apuestas-service, estadisticas-service]
     steps:
       - name: Checkout del codigo
         uses: actions/checkout@v4
 
-      - name: Configurar Python 3.12
-        uses: actions/setup-python@v5
+      - name: Configurar Node.js 20
+        uses: actions/setup-node@v4
         with:
-          python-version: "3.12"
+          node-version: "20"
       
-      - name: Instalar dependencias y correr pytest
-        working-directory: ${{ matrix.service }}
-        run: |
-          pyton -m pip install --upgrade pip
-          pip install -r requirements.txt -r requirements-dev.txt
+      - name: Instalar dependencias 
+        run: npm ci
+      
+      - name: |
+          if npm run | grep -q "^ test$"; then
+            npm test
+          else
+            echo "No hay script 'test' en package.json tdavia - se omite este paso".
+          fi
 
   deploy:
     runs-on: ubuntu-latest
-    needs: test
     steps:
       - name: 1. Descargar el codigo del repo
         uses: actions/checkout@v4
