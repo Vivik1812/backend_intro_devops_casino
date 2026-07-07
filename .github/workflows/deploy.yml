@@ -7,10 +7,35 @@ env:
   AWS_REGION: ${{ vars.AWS_REGION }}
   CLUSTER_NAME: ${{ vars.EKS_CLUSTER }}
   SERVICE_NAME: ${{ vars.ECR_REPOSITORY }}
-  IMAGE_VERSION: "v1.0.0"
+  IMAGE_VERSION: "v1.1.0"
 jobs:
+
+  #Primera etapa: TESTS
+  test: 
+    name: Pruebas unitarias backend(pytest)
+    runs-on: ubuntu-latest
+    strategy: 
+      fail-fast: false
+      matrix:
+        service: [bonos-service, apuestas-service, estadisticas-service]
+    steps:
+      - name: Checkout del codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      
+      - name: Instalar dependencias y correr pytest
+        working-directory: ${{ matrix.service }}
+        run: |
+          pyton -m pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-dev.txt
+
   deploy:
     runs-on: ubuntu-latest
+    needs: test
     steps:
       - name: 1. Descargar el codigo del repo
         uses: actions/checkout@v4
